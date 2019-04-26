@@ -1,0 +1,45 @@
+.page-header, .page-header-space {
+    height: 20mm;
+}
+
+.page-footer, .page-footer-space {
+    height: 20mm;
+
+}
+
+.page-content {
+    margin-left: 20mm;
+    margin-right: 20mm;
+}
+
+.page-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid black;
+    background: yellow;
+}
+
+.page-header {
+    position: fixed;
+    top: 0mm;
+    width: 100%;
+    border-bottom: 1px solid black;
+    background: yellow;
+}
+
+.page {
+    page-break-after: always;
+    text-align: justify;
+}
+
+@page {
+    margin: 0mm;
+}
+
+@media print {
+    thead {display: table-header-group;}
+    tfoot {display: table-footer-group;}
+
+    body {margin: 0;}
+}

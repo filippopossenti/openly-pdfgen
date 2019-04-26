@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Waitable report</title>
+    </head>
+
+    <body>
+        This report will use two window-level variables to suspend the execution of the PDF printing.
+        The idea is to give an opportunity to corner-case pages to load their data and report when the printing can
+        occur.<br/>
+        Examples:
+        <ul>
+            <li>
+                A page that needs to start an Ajax call a couple of seconds after the load is complete due to poor
+                programming in one of its components normally would be printed incomplete, whereas this way it will
+                have a chance to complete loading its content.
+            </li>
+            <li>
+                A page that executes multiple Ajax calls in sequence using Promises.
+            </li>
+        </ul>
+        <br/>
+
+        <div id="result">The report is not ready yet.</div>
+        <script type="text/javascript">
+            window.canTellReportReady = true;
+
+            window.setTimeout(function() {
+                let el = document.getElementById("result");
+                el.innerHTML = "Now the report is ready. Congratulations for waiting long enough!";
+                window.reportReady = true;
+            }, 45000);
+        </script>
+    </body>
+
+</html>
