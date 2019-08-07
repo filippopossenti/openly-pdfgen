@@ -9,6 +9,7 @@ as opposed to solutions relying on less common and less known technologies.
 # Runtime Requirements
 
 You must have a relatively recent version of Node.js installed on your machine. Download it from https://nodejs.org/
+
 You need Maven 3.6 or later installed on your machine. Download it from https://maven.apache.org/
 
 # Run instructions
