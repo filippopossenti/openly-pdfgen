@@ -1,5 +1,6 @@
 package it.openly.pdfgen.services;
 
+import it.openly.pdfgen.exceptions.CannotInstallModuleException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,17 +10,20 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 public class NodeService {
 
+    private final ProcessService processService;
+
     @Autowired
-    ProcessService processService;
+    public NodeService(ProcessService processService) {
+        this.processService = processService;
+    }
 
     @SneakyThrows
-    public String getInstalledVersion() {
+    String getInstalledVersion() {
         // check if node is installed. If not, don't start the service as it would be useless.
         Process p = processService.execute(null, "node", "-v");
 
@@ -38,7 +42,7 @@ public class NodeService {
     }
 
     @SneakyThrows
-    public boolean npmIsInstalled(String where, String moduleName) {
+    boolean npmIsInstalled(String where, String moduleName) {
         File dest = new File(where);
         if(!dest.exists()) {
             return false;
@@ -61,7 +65,7 @@ public class NodeService {
 
 
     @SneakyThrows
-    public void npmInstall(String where, String moduleName) {
+    void npmInstall(String where, String moduleName) {
         File dest = new File(where);
         if(!dest.exists()) {
             dest.mkdirs();
@@ -81,7 +85,7 @@ public class NodeService {
         int exitValue = p.exitValue();
         if(exitValue != 0) {
             log.error("Could not install module '{}'", moduleName);
-            throw new RuntimeException("Could not install a module. Please make sure that node is installed, that Internet connectivity is working and that the specified module exists in the npm repository.");
+            throw new CannotInstallModuleException(moduleName);
         }
         log.info("Installation of npm module '{}' completed.", moduleName);
     }

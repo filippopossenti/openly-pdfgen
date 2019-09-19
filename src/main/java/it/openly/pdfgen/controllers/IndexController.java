@@ -1,6 +1,5 @@
 package it.openly.pdfgen.controllers;
 
-import it.openly.pdfgen.models.Footer;
 import it.openly.pdfgen.models.UrlToPdfRequest;
 import it.openly.pdfgen.services.PostProcessService;
 import it.openly.pdfgen.services.PuppeteerPrintService;
@@ -12,30 +11,29 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class IndexController {
 
-    @Autowired
-    PuppeteerPrintService puppeteerPrintService;
+    private final PuppeteerPrintService puppeteerPrintService;
+    private final PostProcessService postProcessService;
 
     @Autowired
-    PostProcessService postProcessService;
+    public IndexController(PuppeteerPrintService puppeteerPrintService, PostProcessService postProcessService) {
+        this.puppeteerPrintService = puppeteerPrintService;
+        this.postProcessService = postProcessService;
+    }
 
     @PostMapping("/generate")
     public ResponseEntity<InputStreamResource> index(@RequestBody UrlToPdfRequest info) {
         List<InputStream> pdfs = puppeteerPrintService.toPdfs(info.getUrls());
         InputStream mergedPdf = postProcessService.mergePdfFiles(pdfs);
         InputStream mergedPdfsWithFooter = postProcessService.addFooter(info.getFooter(), mergedPdf);
-        String filename = buildPdfFileName(info.getUrls());
+        String filename = buildPdfFileName(info.getUrls().get(0));
         HttpHeaders headers = buildHttpHeaders(filename);
         return new ResponseEntity<>(new InputStreamResource(mergedPdfsWithFooter), headers, HttpStatus.OK);
     }
@@ -48,22 +46,17 @@ public class IndexController {
         return headers;
     }
 
-    private String buildPdfFileName(List<String> urls) {
-        String url = urls.get(0);   // this is intentional as the produced name is not in the specs and therefore arbitrary
+    private String buildPdfFileName(String url) {
         String result = url;
         while (result.endsWith("/")) {
             result = result.substring(0, result.lastIndexOf('/'));
         }
 
-        String name = result.substring(result.lastIndexOf('/') + 1);
-        name = name.replaceAll("[^a-zA-Z0-9\\-_]+", "_");
-
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
-        name += "_";
-        name += simpleDateFormat.format(new Date());
-        name += ".pdf";
-
-        return name;
+        return result.substring(result.lastIndexOf('/') + 1).replaceAll("[^a-zA-Z0-9\\-_]+", "_")
+                + "_"
+                + simpleDateFormat.format(new Date())
+                + ".pdf";
     }
 }

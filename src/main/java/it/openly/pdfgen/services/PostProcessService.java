@@ -29,6 +29,14 @@ public class PostProcessService {
         return new ByteArrayInputStream(outPdf.toByteArray());
     }
 
+    public InputStream mergePdfFiles(List<InputStream> pdfs) {
+        if(pdfs.size() <= 1) {
+            return pdfs.get(0);
+        }
+        ByteArrayOutputStream outPdf = new ByteArrayOutputStream();
+        mergePdfFiles(pdfs, outPdf);
+        return new ByteArrayInputStream(outPdf.toByteArray());
+    }
 
     @SneakyThrows
     private void addFooter(InputStream inPdf, Footer footerInfo, OutputStream outPdf) {
@@ -86,16 +94,6 @@ public class PostProcessService {
         stamp.alterContents();
         copy.addPage(page);
     }
-
-    public InputStream mergePdfFiles(List<InputStream> pdfs) {
-        if(pdfs.size() <= 1) {
-            return pdfs.get(0);
-        }
-        ByteArrayOutputStream outPdf = new ByteArrayOutputStream();
-        mergePdfFiles(pdfs, outPdf);
-        return new ByteArrayInputStream(outPdf.toByteArray());
-    }
-
 
     @SneakyThrows
     private void mergePdfFiles(List<InputStream> inPdfs, OutputStream outPdf) {

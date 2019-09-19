@@ -1,5 +1,6 @@
 package it.openly.pdfgen.services;
 
+import it.openly.pdfgen.exceptions.WrongExitValueException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -92,7 +93,7 @@ public class PuppeteerPrintService {
             }
         }
         else {
-            throw new RuntimeException("Exit code " + exitValue + " was returned. The operation did not complete successfully.");
+            throw new WrongExitValueException(exitValue);
         }
     }
 

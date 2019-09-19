@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ProcessService {
     @SneakyThrows
-    public Process execute(File workDir, String... args) {
+    Process execute(File workDir, String... args) {
         List<String> parts = new ArrayList<>();
         for(int i = 0; i < args.length; i++) {
             parts.add(args[i]);
@@ -38,7 +38,7 @@ public class ProcessService {
     }
 
     @SneakyThrows
-    public String readConsoleLine(Process process) {
+    String readConsoleLine(Process process) {
         InputStream s = process.getInputStream();
         InputStreamReader rdr = new InputStreamReader(s);
         BufferedReader brdr = new BufferedReader(rdr);
@@ -46,7 +46,7 @@ public class ProcessService {
     }
 
     @SneakyThrows
-    public boolean waitSuccessfulExit(Process process, int timeoutSeconds) {
+    boolean waitSuccessfulExit(Process process, int timeoutSeconds) {
         if(!process.waitFor(timeoutSeconds, TimeUnit.SECONDS)) {
             return false;
         }
@@ -59,7 +59,7 @@ public class ProcessService {
     }
 
     @SneakyThrows
-    public boolean waitExit(Process process, int timeoutSeconds) {
+    boolean waitExit(Process process, int timeoutSeconds) {
         return process.waitFor(timeoutSeconds, TimeUnit.SECONDS);
     }
 
