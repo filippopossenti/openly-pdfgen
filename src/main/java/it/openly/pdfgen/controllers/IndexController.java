@@ -49,7 +49,7 @@ public class IndexController {
     }
 
     private String buildPdfFileName(List<String> urls) {
-        String url = urls.get(0);
+        String url = urls.get(0);   // this is intentional as the produced name is not in the specs and therefore arbitrary
         String result = url;
         while (result.endsWith("/")) {
             result = result.substring(0, result.lastIndexOf('/'));

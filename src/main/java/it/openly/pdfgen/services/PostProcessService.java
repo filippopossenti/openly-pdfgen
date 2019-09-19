@@ -32,7 +32,6 @@ public class PostProcessService {
 
     @SneakyThrows
     private void addFooter(InputStream inPdf, Footer footerInfo, OutputStream outPdf) {
-
         Document document = new Document();
         PdfCopy copy = new PdfCopy(document, outPdf);
         document.open();
