@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -53,9 +55,13 @@ public class PuppeteerPrintService {
         }
     }
 
+    public List<InputStream> toPdfs(List<String> urls) {
+        return urls.stream().map(this::toPdf).collect(Collectors.toList());
+    }
+
 
     @SneakyThrows
-    public InputStream toPdf(String url) {
+    private InputStream toPdf(String url) {
         File outDir = new File(outputDir);
         if(!outDir.exists()) {
             outDir.mkdirs();

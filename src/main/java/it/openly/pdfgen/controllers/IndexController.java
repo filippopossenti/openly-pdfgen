@@ -32,34 +32,12 @@ public class IndexController {
 
     @PostMapping("/generate")
     public ResponseEntity<InputStreamResource> index(@RequestBody UrlToPdfRequest info) {
-        List<InputStream> pdfs = generateBasicPdfs(info.getUrls());
-        InputStream mergedPdf = mergePdfs(pdfs);
-        InputStream mergedPdfsWithFooter = appendFooterToPdf(info.getFooter(), mergedPdf);
+        List<InputStream> pdfs = puppeteerPrintService.toPdfs(info.getUrls());
+        InputStream mergedPdf = postProcessService.mergePdfFiles(pdfs);
+        InputStream mergedPdfsWithFooter = postProcessService.addFooter(info.getFooter(), mergedPdf);
         String filename = buildPdfFileName(info.getUrls());
         HttpHeaders headers = buildHttpHeaders(filename);
         return new ResponseEntity<>(new InputStreamResource(mergedPdfsWithFooter), headers, HttpStatus.OK);
-    }
-
-    private List<InputStream> generateBasicPdfs(@RequestBody List<String> urls) {
-        return urls.stream().map(url -> puppeteerPrintService.toPdf(url)).collect(Collectors.toList());
-    }
-
-    private InputStream mergePdfs(List<InputStream> pdfs) {
-        if(pdfs.size() <= 1) {
-            return pdfs.get(0);
-        }
-        ByteArrayOutputStream outPdf = new ByteArrayOutputStream();
-        postProcessService.mergePdfFiles(pdfs, outPdf);
-        return new ByteArrayInputStream(outPdf.toByteArray());
-    }
-
-    private InputStream appendFooterToPdf(Footer footer, InputStream mergedPdf) {
-        if(footer == null) {
-            return mergedPdf;
-        }
-        ByteArrayOutputStream outPdf = new ByteArrayOutputStream();
-        postProcessService.addFooter(mergedPdf, footer, outPdf);
-        return new ByteArrayInputStream(outPdf.toByteArray());
     }
 
     private HttpHeaders buildHttpHeaders(String filename) {

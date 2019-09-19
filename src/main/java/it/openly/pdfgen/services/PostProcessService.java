@@ -7,6 +7,8 @@ import lombok.SneakyThrows;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -18,8 +20,18 @@ public class PostProcessService {
 
     private static final float A4_WIDTH = 21.0f;
 
+    public InputStream addFooter(Footer footer, InputStream mergedPdf) {
+        if(footer == null) {
+            return mergedPdf;
+        }
+        ByteArrayOutputStream outPdf = new ByteArrayOutputStream();
+        addFooter(mergedPdf, footer, outPdf);
+        return new ByteArrayInputStream(outPdf.toByteArray());
+    }
+
+
     @SneakyThrows
-    public void addFooter(InputStream inPdf, Footer footerInfo, OutputStream outPdf) {
+    private void addFooter(InputStream inPdf, Footer footerInfo, OutputStream outPdf) {
 
         Document document = new Document();
         PdfCopy copy = new PdfCopy(document, outPdf);
@@ -76,8 +88,18 @@ public class PostProcessService {
         copy.addPage(page);
     }
 
+    public InputStream mergePdfFiles(List<InputStream> pdfs) {
+        if(pdfs.size() <= 1) {
+            return pdfs.get(0);
+        }
+        ByteArrayOutputStream outPdf = new ByteArrayOutputStream();
+        mergePdfFiles(pdfs, outPdf);
+        return new ByteArrayInputStream(outPdf.toByteArray());
+    }
+
+
     @SneakyThrows
-    public void mergePdfFiles(List<InputStream> inPdfs, OutputStream outPdf) {
+    private void mergePdfFiles(List<InputStream> inPdfs, OutputStream outPdf) {
         Document document = new Document();
         PdfWriter writer = PdfWriter.getInstance(document, outPdf);
         document.open();
